@@ -1,0 +1,59 @@
+Write-Host "Visų skriptų paleidimas" -ForegroundColor cyan
+Write-Host "Running all the scripts" -ForegroundColor cyan
+Write-Host ""
+
+Write-Host "Naujo administratoriaus naudotojo pridėjimas" -ForegroundColor cyan
+Write-Host "Adding a new Admin User" -ForegroundColor cyan
+Write-Host ""
+
+# Kuriamas naujo admin account
+echo "Naujo Admino vardas (New Admin Username):"
+$Username = Read-Host
+echo "Slaptazodis (Password):"
+$Password = Read-Host -AsSecureString
+echo "Pakartokit slaptazodi (repeat password):"
+$Password2 = Read-Host -AsSecureString
+
+# Tikrinam ar tokios patys
+$Plain1 = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
+[Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
+$Plain2 = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
+[Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password2))
+
+if ($Plain1 -ne $Plain2)
+{
+	Write-Host "Slaptazodis ne gerai pakartojat (Incorect repeat password)" -ForegroundColor red
+	return
+}
+
+# Kurimas naujas Adminas
+$params = @{
+	Name        = $Username
+	Password    = $Password
+}
+New-LocalUser @params
+Add-LocalGroupMember -Group "Administrators" -Member $Username
+
+Write-Host "Pavyko sukurti $Username (Succesfully created $Username)" -ForegroundColor green
+
+
+
+Write-Host "Administratoriaus pašalinimas iš dabartinio" -ForegroundColor cyan
+Write-Host "Removing Admin from current" -ForegroundColor cyan
+Write-Host ""
+
+# Jeigu pavyko tai toliau įklijuojam 
+# Sužinoti dabartinio user vardas
+$Current = (whoami).split('\')[1]
+
+Write-Host "Ar panaikinti $Current Admino teises? (Delete $Current Admin permissions?)" -ForegroundColor green
+Write-Host "Y - Taip (Yes); Kita informacija - Ne (Other answer - No)" -ForegroundColor red
+$Answer = Read-Host
+
+if ($Answer -eq "Y") {
+	Remove-LocalGroupMember -Group “Administrators” -Member $Current 
+	Add-LocalGroupMember -Group "Users" -Member $Current
+	Write-Host "Panaikinta $Current Admin teises (Removed $Current Admin privileges)" -ForegroundColor red
+} else {
+	Write-Host "Nenaikinta $Current Admin teises (Didn't remove $Current Admin privileges)" -ForegroundColor green
+}
