@@ -10,7 +10,7 @@ $Password2 = Read-Host -AsSecureString
 $Plain1 = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
 $Plain2 = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password2))
 
-if ($Plain1 -ne $Plain2)
+if ($Plain1 -cne $Plain2)
 {
 	Write-Host "Slaptazodis ne gerai pakartojat (Incorect repeat password)" -ForegroundColor red
 	return
