@@ -15,10 +15,8 @@ echo "Pakartokit slaptazodi (repeat password):"
 $Password2 = Read-Host -AsSecureString
 
 # Tikrinam ar tokios patys
-$Plain1 = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
-[Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
-$Plain2 = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
-[Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password2))
+$Plain1 = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
+$Plain2 = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password2))
 
 if ($Plain1 -ne $Plain2)
 {
@@ -31,19 +29,21 @@ $params = @{
 	Name        = $Username
 	Password    = $Password
 }
+
 New-LocalUser @params
 Add-LocalGroupMember -Group "Administrators" -Member $Username
 
 Write-Host "Pavyko sukurti $Username (Succesfully created $Username)" -ForegroundColor green
-
-
+Write-Host ""
 
 Write-Host "Administratoriaus pašalinimas iš dabartinio" -ForegroundColor cyan
 Write-Host "Removing Admin from current" -ForegroundColor cyan
 Write-Host ""
 
-# Jeigu pavyko tai toliau įklijuojam 
-# Sužinoti dabartinio user vardas
+Write-Host "Prieš pašalindami leidimus įsitikinkite, kad jūsų turimas slaptažodis yra teisingas!!!" -ForegroundColor red -BackgroundColor white
+Write-Host "Before removing the permissions be sure that the password you have is correct!!!" -ForegroundColor red -BackgroundColor white
+Write-Host ""
+
 $Current = (whoami).split('\')[1]
 
 Write-Host "Ar panaikinti $Current Admino teises? (Delete $Current Admin permissions?)" -ForegroundColor green
